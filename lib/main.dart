@@ -1,22 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:resume_app/screen/home_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:resume_app/provider/add_resume_provider.dart';
+import 'package:resume_app/provider/home_provider.dart';
+import 'package:resume_app/screen/home/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List<SingleChildWidget> providers = [
+    ChangeNotifierProvider<HomeProvider>(create: (context) => HomeProvider()),
+    ChangeNotifierProvider<AddResumeProvider>(
+        create: (context) => AddResumeProvider()),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Resume App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: providers,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Resume App',
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(),
     );
   }
 }
