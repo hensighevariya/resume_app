@@ -1,5 +1,6 @@
 class AppStringConstant {
   static String addUserDetails = 'Add User Details';
+  static String updateUserDetails = 'Update User Details';
   static String name = 'Name';
   static String firstName = 'First Name';
   static String lastName = 'Last Name';
@@ -17,4 +18,6 @@ class AppStringConstant {
   static String technicalSkills = 'Technical Skills';
   static String experienceAndOrganisation = 'Experience & Organisation';
   static String save = 'Save';
+  static String update = 'Update';
+  static String resumeListEmpty = 'Resume List Empty';
 }

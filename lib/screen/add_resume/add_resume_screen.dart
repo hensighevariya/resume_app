@@ -4,13 +4,17 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:resume_app/constant/color_constant.dart';
 import 'package:resume_app/constant/string_constant.dart';
 import 'package:resume_app/constant/validation_constant.dart';
+import 'package:resume_app/model/user_data_model.dart';
 import 'package:resume_app/provider/add_resume_provider.dart';
 import 'package:resume_app/widget/app_button.dart';
 import 'package:resume_app/widget/app_text.dart';
 import 'package:resume_app/widget/app_textfield.dart';
 
 class AddResumeScreen extends StatefulWidget {
-  const AddResumeScreen({super.key});
+  final bool isEdit;
+  final UserDataModel? userData;
+
+  const AddResumeScreen({super.key, this.isEdit = false, this.userData});
 
   @override
   State<AddResumeScreen> createState() => _AddResumeScreenState();
@@ -20,6 +24,24 @@ class _AddResumeScreenState extends State<AddResumeScreen> {
   final formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    AddResumeProvider addResumeProvider =
+        Provider.of<AddResumeProvider>(context, listen: false);
+    if (widget.isEdit && widget.userData != null) {
+      addResumeProvider.nameController.text = widget.userData?.name ?? '';
+      addResumeProvider.emailController.text = widget.userData?.email ?? '';
+      addResumeProvider.contactDetailController.text =
+          widget.userData?.contact ?? '';
+      addResumeProvider.summaryController.text = widget.userData?.summary ?? '';
+      addResumeProvider.experienceAndOrganisationController.text =
+          widget.userData?.experience ?? '';
+      addResumeProvider.technicalSkillController.text =
+          widget.userData?.technicalSkill ?? '';
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<AddResumeProvider>(
         builder: (context, addResumeProvider, _) {
@@ -27,7 +49,9 @@ class _AddResumeScreenState extends State<AddResumeScreen> {
         appBar: AppBar(
           backgroundColor: ColorConstant.appTheme,
           title: AppText(
-            text: AppStringConstant.addUserDetails,
+            text: (widget.isEdit && widget.userData != null)
+                ? AppStringConstant.updateUserDetails
+                : AppStringConstant.addUserDetails,
             fontSize: 16.px,
             fontWeight: FontWeight.w600,
             fontColor: ColorConstant.appWhite,
@@ -67,7 +91,7 @@ class _AddResumeScreenState extends State<AddResumeScreen> {
                 validator: (value) => value == null || value.isEmpty
                     ? AppStringConstant.thisFieldIsRequired
                     : AppValidation.emailRegExp.hasMatch(value)
-                        ? ''
+                        ? null
                         : AppStringConstant.enterValidEmail,
               ),
               SizedBox(height: 10.px),
@@ -117,20 +141,46 @@ class _AddResumeScreenState extends State<AddResumeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AppButton(
-                    onTap: () {
-                      if (formKey.currentState!.validate()) {}
-                    },
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15),
-                    color: ColorConstant.appTheme,
-                    widget: AppText(
-                      text: AppStringConstant.save,
-                      fontWeight: FontWeight.bold,
-                      fontColor: ColorConstant.appWhite,
-                      fontSize: 16.px,
-                    ),
-                  ),
+                  (widget.isEdit && widget.userData != null)
+                      ? AppButton(
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              addResumeProvider.updateDataOnTap(
+                                  context, widget.userData?.userId ?? -1);
+                            }
+                          },
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
+                          color: ColorConstant.appTheme,
+                          widget: addResumeProvider.isLoading
+                              ? const CircularProgressIndicator(
+                                  color: ColorConstant.appWhite)
+                              : AppText(
+                                  text: AppStringConstant.update,
+                                  fontWeight: FontWeight.bold,
+                                  fontColor: ColorConstant.appWhite,
+                                  fontSize: 16.px,
+                                ),
+                        )
+                      : AppButton(
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              addResumeProvider.saveDataOnTap(context);
+                            }
+                          },
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
+                          color: ColorConstant.appTheme,
+                          widget: addResumeProvider.isLoading
+                              ? const CircularProgressIndicator(
+                                  color: ColorConstant.appWhite)
+                              : AppText(
+                                  text: AppStringConstant.save,
+                                  fontWeight: FontWeight.bold,
+                                  fontColor: ColorConstant.appWhite,
+                                  fontSize: 16.px,
+                                ),
+                        ),
                 ],
               ),
             ],

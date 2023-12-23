@@ -27,10 +27,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: providers,
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Resume App',
-        home: const HomeScreen(),
+        home: HomeScreen(),
       ),
     );
   }
